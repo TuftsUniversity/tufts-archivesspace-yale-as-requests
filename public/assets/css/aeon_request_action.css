@@ -1,0 +1,39 @@
+#disabled-button-wrapper {
+  display: inline-block;
+  cursor: not-allowed;
+}
+
+#disabled-button-wrapper .btn[disabled] {
+  pointer-events: none;
+}
+
+.visually-hidden {
+  clip-path: inset(100%);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.aeon_request_selector_modal {
+  text-align: left;
+}
+
+.aeon_request_type_wrapper {
+  margin: 2em auto;
+  width: 25em;
+}
+
+button.aeon_request_type_selector {
+  width: 100%;
+}
+
+#aeon_request_selector_modal table label {
+  margin: 0;
+}
+
+#aeon_request_selector_modal table label {
+  margin: 0;
+}

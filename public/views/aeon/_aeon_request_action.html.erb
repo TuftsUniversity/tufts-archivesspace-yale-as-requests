@@ -1,0 +1,32 @@
+<%
+Rails.logger.info("Aeon Fulfillment Plugin") { "Initializing Plugin..." } if AeonRecordMapper.debug_mode?
+
+mapper = AeonRecordMapper.mapper_for(record)
+
+%>
+
+<%= javascript_include_tag "#{@base_url}/assets/js/aeon_request_action.js" %>
+
+<% unless mapper.hide_button? %>
+  <% if mapper.show_action? %>
+
+    <button type="button" id="aeon_request_button" class="btn page_action request btn-default aeon_request_button" title="<%= t('plugins.aeon_fulfillment.request_button_label') %>" data-uri="<%= record.uri %>">
+      <i class="<%= t('plugins.aeon_fulfillment.request_button_icon') %>"></i><br/><%= t('plugins.aeon_fulfillment.request_button_label') %>
+    </button>
+
+  <% else %>
+    
+    <div id="disabled-button-wrapper" tabindex="0" rel="tooltip" data-placement="bottom" title="<%= t('plugins.aeon_fulfillment.requesting_disabled') %>">
+      <button id="disabled-aeon-fulfillment-request" class="btn btn-default page_action request" disabled="true" aria-disabled="true">
+        <i class="<%= t('plugins.aeon_fulfillment.request_button_icon') %>"></i><br/><%= t('plugins.aeon_fulfillment.request_button_label') %>
+        <span class="visually-hidden"><%= t('plugins.aeon_fulfillment.requesting_disabled') %></span>
+      </button>
+    </div>
+    
+  <% end %>
+
+<% end %>
+
+<%
+  Rails.logger.info("Aeon Fulfillment Plugin") { "Finished initializing plugin." } if AeonRecordMapper.debug_mode?
+%>

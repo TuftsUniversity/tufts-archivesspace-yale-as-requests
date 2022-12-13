@@ -1,0 +1,107 @@
+<%= form_tag url_for(:controller => :aeon_request, :action => :build) do |f| %>
+  <%= hidden_field_tag 'uri', record.uri %>
+  <div>
+    <% if finding_aid_view %>
+      <%
+        resource = record.resolved_resource
+        series = (record.resolved_top_container || {}).fetch('series', [])
+                                                      .select{|s| record.json['ancestors'].map{|a| a['ref']}.include?(s['ref'])}
+                                                      .first
+      %>
+      <h3><%= resource['title'] %> (<%= (0..3).map{|n| resource["id_#{n}"]}.compact.join('-') %>)</h3>
+
+      <% if series %>
+        <h4><%= series %></h4>
+        <h5><%= record.display_string %></h5>
+      <% else %>
+        <h4><%= record.display_string %></h4>
+      <% end %>
+    <% end %>
+
+
+    <% if mapper.kind_of?(AeonContainerMapper) %>
+      <h3><%= mapper.record.display_string %></li></h3>
+      <p><strong><%= I18n.t('plugins.aeon_fulfillment.request_reading_room_button') %></strong></p>
+      <%= hidden_field_tag 'request_type', AeonRecordMapper::REQUEST_TYPE_READING_ROOM %>
+    <% else %>
+      <p class="well" style="padding: 10px;">
+        <%= label_tag :request_type, "Type of request:", :style => 'font-size: 12px; margin: 0 0 6px 0; color: #666' %>
+        <%= select_tag :request_type, options_for_select(mapper.available_request_types.map{|rt|  [rt.fetch(:button_label),  rt.fetch(:request_type)] }, mapper.request_type), :class => 'form-control' %>
+      </p>
+
+      <% unless mapper.request_type == AeonRecordMapper::REQUEST_TYPE_PHOTODUPLICATION %>
+        <div>
+          <a class="btn btn-primary btn-xs acc_button aeon_select_all" role="button"><%= t('plugins.aeon_fulfillment.select_all') %></a>
+          <a class="btn btn-primary btn-xs acc_button aeon_clear_all" role="button"><%= t('plugins.aeon_fulfillment.clear_all') %></a>
+        </div>
+      <% end %>
+
+      <table class="table table-bordered table-condensed table-striped" id="aeonRequestTable">
+        <thead class="sr-only">
+          <tr>
+            <th>
+              <%= t('plugins.aeon_fulfillment.toggle_column_label') %>
+            </th>
+            <th>
+              <%= t('plugins.aeon_fulfillment.item_column_label') %>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if mapper.born_digital? %>
+            <tr>
+              <td style="width: 20px;">
+                <% if mapper.request_type == AeonRecordMapper::REQUEST_TYPE_PHOTODUPLICATION %>
+                  <%= radio_button_tag 'born_digital', '1', false, :id => "aeon_born_digital", :class => 'aeon_requestable_item_input' %>
+                <% else %>
+                  <%= check_box_tag 'born_digital', '1', false, :id => "aeon_born_digital", :class => 'aeon_requestable_item_input' %>
+                <% end %>
+              </td>
+              <td>
+                <i class="fa fa-th" title="Record is born digital"></i>
+                <%= label_tag 'aeon_born_digital', record.display_string %>
+              </td>
+            </tr>
+          <% else %>
+            <% mapper.container_instances_for_request_type.sort_by{|instance| instance['_index']}.each do |instance| %>
+              <tr>
+                <td>
+                  <% if mapper.request_type == AeonRecordMapper::REQUEST_TYPE_PHOTODUPLICATION %>
+                    <%= radio_button_tag 'instance_idx[]', instance['_index'], false, :id => "aeon_instance_idx_#{instance['_index']}", :class => 'aeon_requestable_item_input' %>
+                  <% else %>
+                    <%= check_box_tag 'instance_idx[]', instance['_index'], false, :id => "aeon_instance_idx_#{instance['_index']}", :class => 'aeon_requestable_item_input' %>
+                  <% end %>
+                </td>
+                <td>
+                  <%= label_tag "aeon_instance_idx_#{instance['_index']}", record.build_instance_display_string(instance) %>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+    <%= form_tag AppConfig[:aeon_fulfillment]['tufts'][:aeon_web_url], :id => 'aeon_request_sub', :target => 'aeon_request' do |f| %>
+
+
+    <% mapper.map.each do |name, value| %>
+      <% if name.casecmp('requests').zero? %>
+        <% value.each_with_index do |request, request_index| %>
+          <input type='hidden' name='Request' value='<%= request_index + 1 %>' />
+          <% request.each do |request_param, request_value| %>
+            <input type='hidden' name='<%= request_param %>_<%= request_index + 1 %>' value='<%= strip_tags(request_value.to_s) %>' />
+          <% end %>
+        <% end %>
+      <% else %>
+        <input type='hidden' name='<%= name %>' value='<%= strip_tags(value.to_s) %>' />
+      <% end %>
+    <% end %>
+	
+<% end %>
+    <p>
+      <button type="submit" class="btn btn-primary" id="aeonFormSubmit" <% unless mapper.kind_of?(AeonContainerMapper) %>disabled <% end %>>
+        <%= t('plugins.aeon_fulfillment.submit_request_label') %>
+      </button>
+    </p>
+  </div>
+<% end %>

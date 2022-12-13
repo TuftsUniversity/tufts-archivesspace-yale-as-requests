@@ -1,0 +1,19 @@
+en:
+  plugins:
+    aeon_fulfillment:
+      request_button_icon: fa fa-external-link fa-external-link-alt fa-3x
+      request_button_label: Request
+      requesting_disabled: |
+        Requesting not available at this level. Use <strong>Navigate the Collection</strong> to select an item to request.
+      choose_request_type: Request Details
+      request_reading_room_button: Reading Room
+      request_reading_room_help_text: Have this item delivered to the reading room.
+      request_digital_copy_button: Digital Copy
+      request_digital_copy_help_text: Obtain a digitized version of this item.
+      select_all: Select All
+      clear_all: Clear All
+      submit_request_label: Submit Request
+      close_popup_label: Cancel
+      request_unavailable_warning: Record is not available for request.
+      toggle_column_label: Toggle selection
+      item_column_label: Item to request

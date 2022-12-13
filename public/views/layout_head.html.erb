@@ -1,0 +1,36 @@
+<%= stylesheet_link_tag "#{@base_url}/assets/css/aeon_request_action.css" %>
+
+<script type="text/template" id="aeon_request_modal_template">
+  <div class="modal fade aeon_request_selector_modal" id="aeon_request_selector_modal" tabindex="-1" role="dialog" aria-labelledby="aeon_request_selector_modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3 class="modal-title" id="aeon_request_selector_modalLabel"><%= t('plugins.aeon_fulfillment.choose_request_type') %></h3>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+          <!--<button type="button" class="btn btn-default" aria-hidden="true" data-dismiss="modal">Close</button>-->
+          <!--<button type="button" id="form-button" class="btn btn-primary action-btn">Send Request</button>-->
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+
+<% if controller_name == 'resources' && action_name == 'infinite' %>
+  <%= javascript_include_tag "#{@base_url}/assets/js/aeon_request_action.js" %>
+  <%= javascript_include_tag "#{@base_url}/assets/js/inline_request_form.js" %>
+
+  <script>
+    apply_request_buttons_to_infinite();
+    $('[data-dismiss="modal"]').on('click', function() {
+	$('.modal').modal('hide');
+	$('#aeonRequestFormWrapper').remove();
+
+    });
+
+  </script>
+<% end %>

@@ -182,8 +182,9 @@ class AeonRecordMapper
         #
         # We want records without any instances to have a request button that is
         # visible but disabled.
-        return true if !@container_instances.empty? && available_request_types.empty?
-
+        #return true if !@container_instances.empty? && available_request_types.empty?
+        #modified by HLS to hide the request button if there are no instances, either digital or physical, since requesting happens at the AO level
+        return true if @record['json']['instances'].empty?
         false
     end
 

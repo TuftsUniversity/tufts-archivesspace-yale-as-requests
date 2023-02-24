@@ -103,7 +103,7 @@
                      <% end %>
                    </td>
                    <td>
-                     <%= label_tag "aeon_instance_idx_#{instance['_index']}" %>
+                     <%= label_tag "aeon_instance_idx_#{instance['_index']}", record.build_instance_display_string(instance) %>
                    </td>
                  </tr>
                <% end %>

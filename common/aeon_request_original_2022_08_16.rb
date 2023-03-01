@@ -112,8 +112,8 @@ class AeonRequest
       AeonRequest.build_top_container(container['top_container']['_resolved'], request, component_id)
 
       request.delete_if{|k,v| v.nil? || v.is_a?(String) && v.empty?}
-      my_logger = Logger.new("yale_as_requests_common.log")
-      my_logger.info("request: #{request.to_s}")
+     #my_logger = Logger.new("yale_as_requests_common.log")
+     #my_logger.info("request: #{request.to_s}")
       request
     end
   end
@@ -249,8 +249,8 @@ class AeonRequest
   end
 
   def self.containers(instances, locations)
-    my_logger = Logger.new("yale_as_requests_common_aeon_request_container.log")
-    my_logger.info("instances: #{instances.to_s}")
+   #my_logger = Logger.new("yale_as_requests_common_aeon_request_container.log")
+   #my_logger.info("instances: #{instances.to_s}")
     container_numbers = []
     container_locations = []
     container_barcodes = []
@@ -265,32 +265,32 @@ class AeonRequest
         if !string.empty?
           container_numbers << string
         end
-        my_logger.info("\nbox: #{string}")
+       #my_logger.info("\nbox: #{string}")
 
 
-        my_logger.info("\nlocation: #{json['long_display_string']}")
+       #my_logger.info("\nlocation: #{json['long_display_string']}")
         # if (json['container_location']['status'] == 'current')
         #
         # end
       #  container_locations << json['long_display_string']
-          my_logger.info("barcodes: #{json['barcode']}")
+         #my_logger.info("barcodes: #{json['barcode']}")
         container_barcodes << json['barcode']
-        my_logger.info("\n\n")
-        my_logger.info("location: #{json['container_locations'].to_s}")
+       #my_logger.info("\n\n")
+       #my_logger.info("location: #{json['container_locations'].to_s}")
         json['container_locations'].each do |loc|
-          my_logger.info("\n\n")
-          my_logger.info("location: #{loc.to_s}")
+         #my_logger.info("\n\n")
+         #my_logger.info("location: #{loc.to_s}")
           if loc['status'] == 'current'
             ref = loc['ref']
-            my_logger.info("\n\n")
-            my_logger.info("location ref data type: #{ref.class}")
+           #my_logger.info("\n\n")
+           #my_logger.info("location ref data type: #{ref.class}")
 
             test_archival_object_ref = "/repositories/2/archival_objects/116961"
 
             test_archival_object = archivesspace.get_record(test_archival_object_ref)
-            my_logger.info("\n\n\n\n")
-            my_logger.info("test archival object 116961: #{test_archival_object.to_s}")
-            my_logger.info("location ref: #{ref}")
+           #my_logger.info("\n\n\n\n")
+           #my_logger.info("test archival object 116961: #{test_archival_object.to_s}")
+           #my_logger.info("location ref: #{ref}")
             location = archivesspace.get_record_plain(ref)
             title = location['title']
 
@@ -326,12 +326,12 @@ class AeonRequest
 
 
     if container_barcodes.length == 0 && container_locations == 0 && container_numbers.length == 0
-      my_logger.info("all arrays are empty")
+     #my_logger.info("all arrays are empty")
       return_dict = {"container_numbers": "", "container_locations": "", "container_barcodes": ""}
     else
       return_dict = {"container_numbers": container_numbers.join(";"), "container_locations": container_locations.join(";"), "container_barcodes": container_barcodes.join(";")}
     end
-    my_logger.info("return_dict: #{return_dict}")
+   #my_logger.info("return_dict: #{return_dict}")
     return return_dict
   end
 

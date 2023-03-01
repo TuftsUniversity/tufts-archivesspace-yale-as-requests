@@ -1,6 +1,4 @@
 require 'nokogiri'
-require 'net/http'
-require 'json'
 
 require_relative 'aeon_archival_object_request'
 require_relative 'aeon_top_container_request'
@@ -9,9 +7,7 @@ require_relative 'aeon_top_container_request'
 
 class AeonRequest
 
-  def self.get_record_plain(uri)
-    JSONModel::HTTP.get_json(URI.encode(uri))
-  end
+
 
   def self.request_for(json)
     {
@@ -292,16 +288,16 @@ class AeonRequest
          #my_logger.info("location: #{loc.to_s}")
           if loc['status'] == 'current'
             ref = loc['ref']
-            #my_logger.info("\n\n")
-            #my_logger.info("location ref data type: #{ref.class}")
+           #my_logger.info("\n\nref: #{ref}")
+           #my_logger.info("location ref data type: #{ref.class}")
 
             #test_archival_object_ref = "/repositories/2/archival_objects/116961"
 
             #test_archival_object = archivesspace.get_record(test_archival_object_ref)
             #my_logger.info("\n\n\n\n")
             #my_logger.info("test archival object 116961: #{test_archival_object.to_s}")
-            #my_logger.info("location ref: #{ref}")
-            location = self.get_record_plain(ref)
+           #my_logger.info("location ref: #{ref}")
+            location = archivesspace.get_record(ref)
            #my_logger.info("location retrieved from location record: #{location.inspect}")
             title = location['title']
 

@@ -81,7 +81,9 @@ class AeonArchivalObjectRequest
     out['ItemInfo8'] = AeonRequest.local_access_restrictions(json['notes'])
     out['Transaction.CustomFields.ContentWarning'] = AeonRequest.content_warning_content(json['notes'])
     instance_dict = AeonRequest.containers(json['instances'], json['container_locations'])
+   #my_logger = Logger.new("yale_as_requests_ae_request.log")
 
+   #my_logger.info("instance_dict #{instance_dict.inspect}")
     out['Transaction.CustomFields.Container'] =  instance_dict[:container_numbers]
     out["Transaction.CustomFields.StorageLocation"] = instance_dict[:container_locations]
     out["ItemNumber"] = instance_dict[:container_barcodes]

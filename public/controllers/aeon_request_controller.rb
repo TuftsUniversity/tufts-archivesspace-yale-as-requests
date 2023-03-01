@@ -4,13 +4,13 @@ class AeonRequestController < ApplicationController
   def popup
     uri = params[:uri]
 
-    my_logger = Logger.new("yale_as_requests_controller_popup.log")
+   #my_logger = Logger.new("yale_as_requests_controller_popup.log")
 
 
 
-    my_logger.info("URI: #{uri}")
+   #my_logger.info("URI: #{uri}")
     return render status: 400, plain: 'uri param required' if uri.nil?
-    my_logger.info("got to return render")
+   #my_logger.info("got to return render")
     parsed_uri = JSONModel.parse_reference(uri)
 
     if parsed_uri.fetch(:type) == 'archival_object'
@@ -22,10 +22,10 @@ class AeonRequestController < ApplicationController
       'resolve[]' => ['repository:id', 'resource:id@compact_resource', 'top_container_uri_u_sstr:id', 'linked_instance_uris:id', 'digital_object_uris:id'],
     })
 
-    my_logger.info("Got record-Record: " + record.to_s)
+   #my_logger.info("Got record-Record: " + record.to_s)
     mapper = AeonRecordMapper.mapper_for(record)
 
-    my_logger.info("mapper: " + mapper.inspect)
+   #my_logger.info("mapper: " + mapper.inspect)
     #request_type = 'reading_room'
     request_type = params[:request_type].to_s.empty? ? nil : params[:request_type]
 
@@ -48,24 +48,24 @@ class AeonRequestController < ApplicationController
 
     
 
-    my_logger.info("record: " + mapper.inspect)
-    my_logger.info("mapper: " + mapper.inspect)
+   #my_logger.info("record: " + mapper.inspect)
+   #my_logger.info("mapper: " + mapper.inspect)
     #my_logger.info("finding aid view: " + params[:finding_aid_view].to_s == 'true'.to_s)
 
     request_type_config = mapper.available_request_types.detect{|rt| rt.fetch(:request_type) == params[:request_type]}
-    my_logger.info("request_type_config: " + request_type_config.to_s)
+   #my_logger.info("request_type_config: " + request_type_config.to_s)
     render partial: 'aeon/aeon_request_popup', locals: {
       record: record,
       mapper: mapper,
       #finding_aid_view: params[:finding_aid_view].to_s == 'true',
       request_type_config: request_type_config,
     }
-    my_logger.info("mapper after render: " + mapper.inspect)
-    my_logger.info("got past render partial ... popup")
+   #my_logger.info("mapper after render: " + mapper.inspect)
+   #my_logger.info("got past render partial ... popup")
   end
 
   def build
-    my_logger = Logger.new("yale_as_requests_controller_build.log")
+   #my_logger = Logger.new("yale_as_requests_controller_build.log")
 
     uri = params[:uri]
 

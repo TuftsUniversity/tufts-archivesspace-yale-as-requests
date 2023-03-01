@@ -2,7 +2,7 @@ require_relative '../../common/aeon_request'
 
 class AeonRecordMapper
 
-    my_logger = Logger.new("yale_as_requests_models.log")
+   #my_logger = Logger.new("yale_as_requests_models.log")
     include ManipulateNode
 
     @@mappers = {}
@@ -26,8 +26,8 @@ class AeonRecordMapper
 
 
 	def map(extra_params = {}, fallback_params = {})
-	  my_logger = Logger.new("yale_as_requests_models.log")
-      my_logger.info("self.record.json: #{self.record.json.to_s}")
+	 #my_logger = Logger.new("yale_as_requests_models.log")
+     #my_logger.info("self.record.json: #{self.record.json.to_s}")
       selected_container_instances = nil
 
       if @requested_instance_indexes && self.record.json['instances']

@@ -6,13 +6,53 @@ require_relative 'aeon_archival_object_request'
 require_relative 'aeon_top_container_request'
 
 
+def parse_sub_container_display_string_yale_as_requests(sub_container, inst, opts = {})
+  summary = opts.fetch(:summary, false)
+  citation = opts.fetch(:citation, false)
+  parts = []
+
+  instance_type = I18n.t("enumerations.instance_instance_type.#{inst.fetch('instance_type')}", :default => inst.fetch('instance_type'))
+
+  # add the top container type and indicator
+  if sub_container.has_key?('top_container')
+    top_container_solr = get_record_plain(sub_container['top_container']['ref'])
+    #top_container_solr = top_container_for_uri(sub_container['top_container']['ref'])
+    if top_container_solr
+      # We have a top container from Solr
+      top_container_display_string = ""
+      top_container_json = ASUtils.json_parse(top_container_solr.fetch('json'))
+      if top_container_json['type']
+        top_container_type = I18n.t("enumerations.container_type.#{top_container_json.fetch('type')}", :default => top_container_json.fetch('type'))
+        top_container_display_string << "#{top_container_type}: "
+      else
+        top_container_display_string << "#{I18n.t('enumerations.container_type.container')}: "
+      end
+      top_container_display_string << top_container_json.fetch('indicator')
+      parts << top_container_display_string
+    elsif sub_container['top_container']['_resolved'] && sub_container['top_container']['_resolved']['display_string']
+      # We have a resolved top container with a display string
+      parts << sub_container['top_container']['_resolved']['display_string']
+    end
+  end
+end
+
+def build_instance_display_string(instance)
+  if sc = instance.fetch('sub_container', nil)
+    parse_sub_container_display_string_yale_as_requests(sc, instance)
+  elsif digital_object = instance.dig('digital_object', '_resolved')
+    digital_object.fetch('title')
+  else
+    raise "Instance not supported: #{instance}"
+  end
+end
+
 
 class AeonRequest
-
+  
   def self.get_record_plain(uri)
     JSONModel::HTTP.get_json(URI.encode(uri))
   end
-
+      
   def self.request_for(json)
     {
       'archival_object' => AeonArchivalObjectRequest,
@@ -258,7 +298,7 @@ class AeonRequest
   end
 
   def self.containers(instances, locations)
-   #my_logger = Logger.new("yale_as_requests_common_aeon_request_container.log")
+   my_logger = Logger.new("yale_as_requests_common_aeon_request_container.log")
     #my_logger.info("instances: #{instances.to_s}")
     container_numbers = []
     container_locations = []
@@ -274,7 +314,7 @@ class AeonRequest
         if !string.empty?
           container_numbers << string
         end
-        #my_logger.info("\nbox: #{string}")
+        my_logger.info("\nbox: #{string}")
 
 
         #my_logger.info("\nlocation: #{json['long_display_string']}")
@@ -287,9 +327,9 @@ class AeonRequest
         #my_logger.info("\n\n")
         #my_logger.info("location: #{json['container_locations'].to_s}")
         json['container_locations'].each do |loc|
-         #my_logger.info("\n\n")
-         #my_logger.info("loc: #{loc}")
-         #my_logger.info("location: #{loc.to_s}")
+         my_logger.info("\n\n")
+         my_logger.info("loc: #{loc}")
+         my_logger.info("location: #{loc.to_s}")
           if loc['status'] == 'current'
             ref = loc['ref']
             #my_logger.info("\n\n")
@@ -300,9 +340,9 @@ class AeonRequest
             #test_archival_object = archivesspace.get_record(test_archival_object_ref)
             #my_logger.info("\n\n\n\n")
             #my_logger.info("test archival object 116961: #{test_archival_object.to_s}")
-            #my_logger.info("location ref: #{ref}")
+            my_logger.info("location ref: #{ref}")
             location = self.get_record_plain(ref)
-           #my_logger.info("location retrieved from location record: #{location.inspect}")
+            my_logger.info("location retrieved from location record: #{location.inspect}")
             title = location['title']
 
             title = title.gsub(/([^,]+),([^,]+),([^\[]+).+?,(\s+[^,]+,\s+[^,]+,\s+.+?)\]/, 'Room:\3,\4')

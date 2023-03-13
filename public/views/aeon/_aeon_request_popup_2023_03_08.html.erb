@@ -103,8 +103,7 @@
                      <% end %>
                    </td>
                    <td>
-                     <% containers_all = record.container_display[0].inspect %>
-                     <% containers_all = containers_all.gsub(/\"/, '') %>
+                     <% containers_all = record.container_display.inspect + record.container_summary_for_badge.inspect %>
                      <%= label_tag "aeon_instance_idx_#{instance['_index']}", containers_all %>
                    </td>
                  </tr>

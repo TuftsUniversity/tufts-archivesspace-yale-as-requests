@@ -1,12 +1,12 @@
-
+require_relative '../../common/aeon_request'
 class AeonRequestController < ApplicationController
   protect_from_forgery with: :exception
+  
   def popup
     uri = params[:uri]
-
+    
+    
    #my_logger = Logger.new("yale_as_requests_controller_popup.log")
-
-
 
    #my_logger.info("URI: #{uri}")
     return render status: 400, plain: 'uri param required' if uri.nil?
@@ -51,9 +51,9 @@ class AeonRequestController < ApplicationController
    #my_logger.info("record: " + mapper.inspect)
    #my_logger.info("mapper: " + mapper.inspect)
     #my_logger.info("finding aid view: " + params[:finding_aid_view].to_s == 'true'.to_s)
-
     request_type_config = mapper.available_request_types.detect{|rt| rt.fetch(:request_type) == params[:request_type]}
-   #my_logger.info("request_type_config: " + request_type_config.to_s)
+    
+    #my_logger.info("request_type_config: " + request_type_config.to_s)
     render partial: 'aeon/aeon_request_popup', locals: {
       record: record,
       mapper: mapper,

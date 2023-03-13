@@ -1,5 +1,7 @@
 require_relative '../../common/aeon_request'
-
+require 'nokogiri'
+require 'net/http'
+require 'json'
 class AeonRecordMapper
 
    #my_logger = Logger.new("yale_as_requests_models.log")
@@ -25,6 +27,66 @@ class AeonRecordMapper
     end
 
 
+    def get_record_plain(uri)
+      JSONModel::HTTP.get_json(URI.encode(uri))
+    end
+    #def top_container_for_uri(uri)
+    #  resolved = resolved_top_container_for_uri(uri)
+    #  #if raw['_resolved_top_container_uri_u_sstr']
+    #    #resolved = raw['_resolved_top_container_uri_u_sstr'].fetch(uri, nil)
+
+    #  if resolved
+    #    resolved.first
+    #  
+    #  else
+    #   resolved
+    #  end
+    #end
+    #def parse_sub_container_display_string_yale_as_requests(sub_container, inst, opts = {})
+    #  summary = opts.fetch(:summary, false)
+    #  citation = opts.fetch(:citation, false)
+    #  parts = []
+
+    # instance_type = I18n.t("enumerations.instance_instance_type.#{inst.fetch('instance_type')}", :default => inst.fetch('instance_type'))
+
+    #  # add the top container type and indicator
+    #  if sub_container.has_key?('top_container')
+    #    top_container_json = resolved_top_container_for_uri(sub_container['top_container']['ref'])
+    #    #top_container_solr = top_container_for_uri(sub_container['top_container']['ref'])
+    #    if top_container_json
+    #      # We have a top container from Solr
+    #      top_container_display_string = ""
+    #      top_container_display_string << top_container_json.inspect
+    #      #top_container_json = ASUtils.json_parse(top_container_solr.fetch('json'))
+    #      if top_container_json['type']
+    #        top_container_type = I18n.t("enumerations.container_type.#{top_container_json.fetch('type')}", :default => top_container_json.fetch('type'))
+    #        top_container_display_string << "#{top_container_type}: "
+    #        
+    #        top_container_display_string << "whole container #{top_container_json.inspect}"
+    #      else
+    #        top_container_display_string << "#{I18n.t('enumerations.container_type.container')}: "
+    #      end
+    #      top_container_display_string << top_container_json.fetch('indicator')
+    #      parts << top_container_display_string
+    #      #parts << "indicator: #{top_container_json.fetch('indicator')}"
+    #    elsif sub_container['top_container']['_resolved'] && sub_container['top_container']['_resolved']['display_string']
+    #      # We have a resolved top container with a display string
+    #      parts << sub_container['top_container']['_resolved']['display_string']
+    #    end
+    #  end
+    #end
+
+    #def build_instance_display_string(instance)
+    #  if sc = instance.fetch('sub_container', nil)
+    #    parse_sub_container_display_string_yale_as_requests(sc, instance)
+    #  elsif digital_object = instance.dig('digital_object', '_resolved')
+    #    digital_object.fetch('title')
+    #  else
+    #    raise "Instance not supported: #{instance}"
+    #  end
+    #end
+
+    
     def map(extra_params = {}, fallback_params = {})
 	 #my_logger = Logger.new("yale_as_requests_models.log")
      #my_logger.info("self.record.json: #{self.record.json.to_s}")
@@ -58,7 +120,7 @@ class AeonRecordMapper
       fallback_params.each do |field, value|
         result[field] ||= value
       end
-
+      
       result
     end
 

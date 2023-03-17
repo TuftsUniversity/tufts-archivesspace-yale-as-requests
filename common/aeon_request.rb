@@ -298,7 +298,7 @@ class AeonRequest
   end
 
   def self.containers(instances, locations)
-   my_logger = Logger.new("yale_as_requests_common_aeon_request_container.log")
+    #my_logger = Logger.new("yale_as_requests_common_aeon_request_container.log")
     #my_logger.info("instances: #{instances.to_s}")
     container_numbers = []
     container_locations = []
@@ -314,7 +314,7 @@ class AeonRequest
         if !string.empty?
           container_numbers << string
         end
-        my_logger.info("\nbox: #{string}")
+        #my_logger.info("\nbox: #{string}")
 
 
         #my_logger.info("\nlocation: #{json['long_display_string']}")
@@ -327,9 +327,9 @@ class AeonRequest
         #my_logger.info("\n\n")
         #my_logger.info("location: #{json['container_locations'].to_s}")
         json['container_locations'].each do |loc|
-         my_logger.info("\n\n")
-         my_logger.info("loc: #{loc}")
-         my_logger.info("location: #{loc.to_s}")
+         #my_logger.info("\n\n")
+         #my_logger.info("loc: #{loc}")
+         #my_logger.info("location: #{loc.to_s}")
           if loc['status'] == 'current'
             ref = loc['ref']
             #my_logger.info("\n\n")
@@ -340,9 +340,9 @@ class AeonRequest
             #test_archival_object = archivesspace.get_record(test_archival_object_ref)
             #my_logger.info("\n\n\n\n")
             #my_logger.info("test archival object 116961: #{test_archival_object.to_s}")
-            my_logger.info("location ref: #{ref}")
+            #my_logger.info("location ref: #{ref}")
             location = self.get_record_plain(ref)
-            my_logger.info("location retrieved from location record: #{location.inspect}")
+            #my_logger.info("location retrieved from location record: #{location.inspect}")
             title = location['title']
 
             title = title.gsub(/([^,]+),([^,]+),([^\[]+).+?,(\s+[^,]+,\s+[^,]+,\s+.+?)\]/, 'Room:\3,\4')

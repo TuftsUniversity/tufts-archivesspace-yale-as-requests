@@ -32,5 +32,12 @@
 
   <% end %>
 
+  <button type="submit" style="visibility: hidden;" class="btn btn-primary" id="aeonFormSubmit" <% unless mapper.kind_of?(AeonContainerMapper) %>disabled <% end %>
+  <%= t('plugins.aeon_fulfillment.submit_request_label') %>
+</button> 
+  <script type="text/javascript">
+
+  document.getElementById("aeon_request_sub").submit();
+</script>
 <% end %>
 

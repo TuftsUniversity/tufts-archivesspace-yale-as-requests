@@ -99,6 +99,7 @@ class AeonRequest
 
     out['SystemID'] = cfg.fetch(:aeon_external_system_id, "ArchivesSpace")
     out['ReturnLinkURL'] = "#{AppConfig[:public_proxy_url]}#{json['uri']}"
+    out['ItemInfo3'] = "#{AppConfig[:public_proxy_url]}#{json['uri']}"
     out['ReturnLinkSystemName'] = cfg.fetch(:aeon_return_link_label, "ArchivesSpace")
     out['Site'] = cfg.fetch(:aeon_site_code, '')
 

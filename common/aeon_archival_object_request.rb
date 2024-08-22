@@ -1,5 +1,9 @@
 class AeonArchivalObjectRequest
 
+  def self.archivesspace
+
+    ArchivesSpaceClient.instance
+  end
   # kind of replicating some pui madness - gross
   def self.citation(json, mapped)
     cite = ''
@@ -62,6 +66,13 @@ class AeonArchivalObjectRequest
         out["#{label}_date"] = dates.map { |date| date['expression'] }.join("; ")
       }
 
+    resource_record = self.archivesspace.get_record(json['resource']['ref'])
+
+    # my_logger = Logger.new("yale_as_requests_ae_request.log")
+
+    # my_logger.info("resource #{resource_record.inspect}")
+  
+    ead_id = resource_record['ead_id']
     out['restrictions_apply'] = json['restrictions_apply']
 
     out['ItemInfo14'] = json['resource']['ref']
@@ -81,11 +92,12 @@ class AeonArchivalObjectRequest
     out['ItemInfo8'] = AeonRequest.local_access_restrictions(json['notes'])
     out['Transaction.CustomFields.ContentWarning'] = AeonRequest.content_warning_content(json['notes'])
     instance_dict = AeonRequest.containers(json['instances'], json['container_locations'])
-   #my_logger = Logger.new("yale_as_requests_ae_request.log")
 
-   #my_logger.info("instance_dict #{instance_dict.inspect}")
     out['Transaction.CustomFields.Container'] =  instance_dict[:container_numbers]
     out["Transaction.CustomFields.StorageLocation"] = instance_dict[:container_locations]
+    out["Transaction.CustomFields.CollectionRestriction"] = AeonRequest.get_collection_restriction(resource_record['notes'])
+    
+ 
     out["ItemNumber"] = instance_dict[:container_barcodes]
     out['ItemVolume'] = json['component_id']
 
@@ -99,11 +111,7 @@ class AeonArchivalObjectRequest
     reference_number = json['component_id'].dup
     reference_number.gsub!(/^([^\.-]+).+/, '\1')
 
-    out["ReferenceNumber"] = reference_number
-    # resource_record = archivesspace.get_record(json['resource']['ref'])
-    #
-    # ead_id = resource_record['ead_id']
-    #out['ReferenceNumber'] = AeonRequest.get_resource_ead_id(json['resource']['ref'])
+
 
     out['ItemDate'] = json['dates'].map {|d|
       #I18n.t("enumerations.date_label.#{d['label']}") + '  ' + (d['expression'] || ([d['begin'], d['end']].compact.join(' - ')))

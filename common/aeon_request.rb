@@ -291,28 +291,26 @@ class AeonRequest
          .join('; ')
   end
 
+
   def self.resource_access_restrictions_content(notes)
-    
     x = 0
-
-
     resource_access_restrict_notes_array = []
-    notes.each do |note |
-      
-        if note == "accessrestrict"
-          resource_access_restrict_notes_array.append(notes[x + 1])
-        end
-
-
-
-    x += 1
-
+  
+    notes.each do |note|
+      break if x == 2 # Exit the loop if x equals 2
+  
+      if note == "accessrestrict"
+        truncated_note = notes[x + 1].slice(0, 125) # Truncate to the first 100 characters
+        resource_access_restrict_notes_array.append(truncated_note)
+      end
+  
+      x += 1
     end
-
+  
     resource_access_restrict_notes = resource_access_restrict_notes_array.join('; ')
-
     resource_access_restrict_notes
   end
+  
 
   def self.get_collection_restriction(resource_notes)
 

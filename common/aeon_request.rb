@@ -298,11 +298,11 @@ class AeonRequest
     resource_access_restrict_notes_array = []
   
     notes.each do |note|
-      break if noteCount == 2 # Exit the loop if x equals 2
+      break if noteCount == 1 # Exit the loop if x equals 2
   
       if note == "accessrestrict"
         noteCount = noteCount + 1
-        truncated_note = notes[x + 1].slice(0, 125) # Truncate to the first 100 characters
+        truncated_note = notes[x + 1].slice(0, 250) # Truncate to the first 100 characters
         resource_access_restrict_notes_array.append(truncated_note)
       end
   

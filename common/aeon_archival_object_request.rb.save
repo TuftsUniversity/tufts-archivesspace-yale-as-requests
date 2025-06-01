@@ -15,15 +15,15 @@ class AeonArchivalObjectRequest
 
       cite += ', '
       cite += json['instances'].select { |i| i['sub_container'] }.map { |i|
-      sc = i['sub_container']
-      tc = sc['top_container']['_resolved']
+  sc = i['sub_container']
+        tc = sc['top_container']['_resolved']
 
-      base = (tc['type'] ? I18n.t("enumerations.container_type.#{tc['type']}", default: tc['type']) : 'Container') + ': ' + tc['indicator']
+        base = (tc['type'] ? I18n.t("enumerations.container_type.#{tc['type']}", default: tc['type']) : 'Container') + ': ' + tc['indicator']
 
-      suffix = ['2', '3'].select { |l| sc["indicator_#{l}"] }.map { |l|
-       ', ' + (sc["type_#{l}"] ? I18n.t("enumerations.container_type.#{sc["type_#{l}"]}", default: sc["type_#{l}"]) : 'Container') +
-       ': ' + sc["indicator_#{l}"]
-      }.join
+        suffix = ['2', '3'].select { |l| sc["indicator_#{l}"] }.map { |l|
+          ', ' + (sc["type_#{l}"] ? I18n.t("enumerations.container_type.#{sc["type_#{l}"]}", default: sc["type_#{l}"]) : 'Container') +
+          ': ' + sc["indicator_#{l}"]
+        }.join
 
         onsite = tc['onsite_status'] ? " - #{tc['onsite_status'].capitalize}" : ''
 

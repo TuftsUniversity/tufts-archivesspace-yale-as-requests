@@ -4,7 +4,7 @@ require 'net/http'
 require 'json'
 class AeonRecordMapper
 
-   #my_logger = Logger.new("yale_as_requests_models.log")
+#     my_logger = Logger.new("yale_as_requests_models.log")
     include ManipulateNode
 
     @@mappers = {}
@@ -88,8 +88,6 @@ class AeonRecordMapper
 
     
     def map(extra_params = {}, fallback_params = {})
-	 #my_logger = Logger.new("yale_as_requests_models.log")
-     #my_logger.info("self.record.json: #{self.record.json.to_s}")
       selected_container_instances = nil
 
       if @requested_instance_indexes && self.record.json['instances']
@@ -107,12 +105,18 @@ class AeonRecordMapper
       self.record.raw.fetch('_resolved_top_container_uri_u_sstr', {}).each do |container_ref, resolved_results|
           resolved_top_containers[container_ref] = ASUtils.json_parse(resolved_results.fetch(0).fetch('json'))
       end
+      #my_logger.info("self.record.json: #{self.record.json.to_s}")
+      #my_logger.info("self.record.resolved_resource: #{self.record.resolved_resource.to_s}")
+      #my_logger.info("selected_container_instances: #{selected_container_instances.to_s}")
+      #my_logger.info("resolved_top_containers: #{resolved_top_containers}")
+
+
 
       result = AeonRequest.build(self.record.json,
                                  :resource => self.record.resolved_resource,
                                  :selected_container_instances => selected_container_instances,
                                  :resolved_top_containers => resolved_top_containers)
-
+      
       extra_params.each do |field, value|
         result[field] = value
       end
@@ -211,6 +215,8 @@ class AeonRecordMapper
     end
 
     def self.mapper_for(record)
+#         my_logger = Logger.new("yale_as_requests_models.log")
+#         my_logger.info("mappers: #{@@mappers.inspect}")
         if @@mappers.has_key?(record.class)
             @@mappers[record.class].new(record)
         else

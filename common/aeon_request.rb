@@ -50,7 +50,11 @@ end
 class AeonRequest
   
   def self.get_record_plain(uri)
-    JSONModel::HTTP.get_json(URI.encode(uri))
+
+    resource = JSONModel::HTTP.get_json(URI.encode(uri))
+  
+    resource
+
   end
       
   def self.request_for(json)
@@ -287,6 +291,39 @@ class AeonRequest
          .join('; ')
   end
 
+
+  def self.resource_access_restrictions_content(notes)
+    x = 0
+    noteCount = 0
+    resource_access_restrict_notes_array = []
+  
+    notes.each do |note|
+      break if noteCount == 1 # Exit the loop if x equals 2
+  
+      if note == "accessrestrict"
+        noteCount = noteCount + 1
+        truncated_note = notes[x + 1].slice(0, 250) # Truncate to the first 100 characters
+        resource_access_restrict_notes_array.append(truncated_note)
+      end
+  
+      x += 1
+    end
+  
+    resource_access_restrict_notes = resource_access_restrict_notes_array.join('; ')
+    resource_access_restrict_notes
+  end
+  
+
+  def self.get_collection_restriction(resource_notes)
+
+
+    
+    resource_restriction_notes = self.resource_access_restrictions_content(resource_notes)
+   
+    resource_restriction_notes
+
+  end
+
   def self.content_warning_content(notes)
     notes.select {|n| n['type'] == 'scopecontent' && (n['label'] == 'Content Warning' || n['label'] == 'Content warning')}
          .map {|n| n['subnotes'].map {|s| s['content']}.join(' ')}
@@ -299,8 +336,7 @@ class AeonRequest
   end
 
   def self.containers(instances, locations)
-    #my_logger = Logger.new("yale_as_requests_common_aeon_request_container.log")
-    #my_logger.info("instances: #{instances.to_s}")
+
     container_numbers = []
     container_locations = []
     container_barcodes = []

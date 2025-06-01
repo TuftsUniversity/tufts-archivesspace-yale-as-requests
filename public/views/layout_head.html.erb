@@ -19,18 +19,16 @@
   </div>
 </script>
 
-
 <% if controller_name == 'resources' && action_name == 'infinite' %>
   <%= javascript_include_tag "#{@base_url}/assets/js/aeon_request_action.js" %>
   <%= javascript_include_tag "#{@base_url}/assets/js/inline_request_form.js" %>
-
   <script>
+    // REMOVE this line:
     apply_request_buttons_to_infinite();
+
     $('[data-dismiss="modal"]').on('click', function() {
-	$('.modal').modal('hide');
-	$('#aeonRequestFormWrapper').remove();
-
+        $('.modal').modal('hide');
+        $('#aeonRequestFormWrapper').remove();
     });
-
   </script>
 <% end %>

@@ -65,7 +65,7 @@ class AeonRequestController < ApplicationController
   end
 
   def build
-   #my_logger = Logger.new("yale_as_requests_controller_build.log")
+#     my_logger = Logger.new("yale_as_requests_controller_build.log")
 
     uri = params[:uri]
 
@@ -82,8 +82,13 @@ class AeonRequestController < ApplicationController
       'resolve[]' => ['repository:id', 'resource:id@compact_resource', 'top_container_uri_u_sstr:id', 'linked_instance_uris:id', 'digital_object_uris:id'],
     })
 
+#     my_logger.info("record in controller build: " + record.to_s)
+    #yale_as_requests_controller_build.log
     mapper = AeonRecordMapper.mapper_for(record)
+#     my_logger.info("mapper in controller build: " + record.inspect)
 
+    #my_logger.info("record in controller build: " + record.to_s)
+    
     return render status: 400, plain: 'Action not supported for record' if mapper.hide_button?
     return render status: 400, plain: 'Action not available for record' unless mapper.show_action?
 
@@ -93,6 +98,8 @@ class AeonRequestController < ApplicationController
 
     mapper.requested_instance_indexes = (params[:instance_idx] || []).map{|idx| Integer(idx)}
     mapper.request_type = request_type_config.fetch(:request_type)
+
+#     my_logger.info("request_type_config in controller build: " + request_type_config.to_s)
 
     render partial: 'aeon/aeon_request', locals: {
       record: record,

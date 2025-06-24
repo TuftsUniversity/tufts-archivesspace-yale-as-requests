@@ -1,6 +1,3 @@
-
-
-
 $(function() {
   var setup_inline_request_form = function(uri) {
     $('#aeon_request_selector_modal').remove();
@@ -19,8 +16,9 @@ function apply_request_buttons_to_infinite() {
   $('.infinite-item[data-requestable="true"]').each(function () {
     const section = $(this);
 
-    section.find('.information').addClass('row');
-    section.find('.information h3').addClass('col-sm-9');
+    const $info = section.find('.information');
+    $info.addClass('row');
+    const $h3 = $info.find('h3').first().addClass('col-sm-9');
 
     const requestButton = $('<div class="col-sm-3"></div>');
     const link = $('<a class="btn btn-default btn-sm" style="margin-bottom: 0.5em;" href="javascript:void(0);">' +
@@ -33,8 +31,9 @@ function apply_request_buttons_to_infinite() {
     requestButton.append(link);
 
     // Only add if not already there
-    if (section.find('.information .col-sm-3').length === 0) {
-      section.find('.information').append(requestButton);
+    if ($info.find('.inline-request-button').length === 0) {
+      // Insert immediately after the <h3>
+      $h3.after(requestButton);
     }
   });
 }
@@ -55,11 +54,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const h3 = info.querySelector('h3');
         if (h3) h3.classList.add('col-sm-9');
 
+        // Prevent duplicate
+        if (info.querySelector('.inline-request-button')) return;
+
         const requestButton = document.createElement('div');
         requestButton.className = 'col-sm-3';
 
         const link = document.createElement('a');
-        link.className = 'btn btn-default btn-sm';
+        link.className = 'btn btn-default btn-sm inline-request-button';
         link.style.marginBottom = '0.5em';
         link.href = 'javascript:void(0);';
         link.innerHTML = '<i class="fa fa-external-link fa-external-link-alt"></i> Request';
@@ -69,7 +71,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         requestButton.appendChild(link);
-        info.appendChild(requestButton);
+
+        // Insert the button *immediately after the <h3>*
+        if (h3.nextSibling) {
+          h3.parentNode.insertBefore(requestButton, h3.nextSibling);
+        } else {
+          h3.parentNode.appendChild(requestButton);
+        }
       }
     });
   };
@@ -96,3 +104,4 @@ function debounce(func, wait) {
     timeout = setTimeout(func, wait);
   };
 }
+

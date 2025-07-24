@@ -48,13 +48,21 @@ end
 
 
 class AeonRequest
-  
+  #def self.get_record_plain(uri)
+  #  JSONModel::HTTP.get_json(URI.encode(uri))
+  #end  
   def self.get_record_plain(uri)
-
-    resource = JSONModel::HTTP.get_json(URI.encode(uri))
-  
-    resource
-
+    begin
+      if uri.start_with?('/locations/')
+        id = uri.split('/').last
+        JSONModel(:location).find(id)
+      else
+        JSONModel::HTTP.get_json(URI.encode(uri))
+      end
+    rescue => e
+      Rails.logger.error("Failed to fetch record from #{uri}: #{e.message}")
+      nil
+    end
   end
       
   def self.request_for(json)
@@ -166,7 +174,6 @@ class AeonRequest
 	     print("digital object")
 		 
 	  end
-      ##my_logger = Logger.new("yale_as_requests_common.log")
       ##my_logger.info("request: #{request.to_s}")
       request
     end
@@ -336,90 +343,67 @@ class AeonRequest
   end
 
   def self.containers(instances, locations)
-
+    my_logger = Logger.new("yale_as_requests_common.log")
     container_numbers = []
     container_locations = []
     container_barcodes = []
     return_dict = {}
 
-    instances.each do |instance |
+    instances.each do |instance|
       begin
         json = instance['sub_container']['top_container']['_resolved']
-
-        string = json['display_string']
-        string = string.gsub(/^(.+?)\:.+$/, '\1')
-        if !string.empty?
-          container_numbers << string
-        end
-        #my_logger.info("\nbox: #{string}")
-
-
-        #my_logger.info("\nlocation: #{json['long_display_string']}")
-        # if (json['container_location']['status'] == 'current')
-        #
-        # end
-      #  container_locations << json['long_display_string']
-          #my_logger.info("barcodes: #{json['barcode']}")
         container_barcodes << json['barcode']
-        #my_logger.info("\n\n")
-        #my_logger.info("location: #{json['container_locations'].to_s}")
-        json['container_locations'].each do |loc|
-         #my_logger.info("\n\n")
-         #my_logger.info("loc: #{loc}")
-         #my_logger.info("location: #{loc.to_s}")
-          if loc['status'] == 'current'
-            ref = loc['ref']
-            #my_logger.info("\n\n")
-            #my_logger.info("location ref data type: #{ref.class}")
 
-            #test_archival_object_ref = "/repositories/2/archival_objects/116961"
+        # Extract container number from display_string
+        string = json['display_string'].to_s.gsub(/^(.+?)\:.+$/, '\1')
+        container_numbers << string unless string.empty?
 
-            #test_archival_object = archivesspace.get_record(test_archival_object_ref)
-            #my_logger.info("\n\n\n\n")
-            #my_logger.info("test archival object 116961: #{test_archival_object.to_s}")
-            #my_logger.info("location ref: #{ref}")
-            location = self.get_record_plain(ref)
-            #my_logger.info("location retrieved from location record: #{location.inspect}")
-            title = location['title']
+        # Process container locations
+        if json['container_locations']
+          json['container_locations'].each do |loc|
+            if loc['status'] == 'current'
+              ref = loc['ref']
+              my_logger.info("loc: #{loc.inspect}")
+              location = self.get_record_plain(ref)
 
-            title = title.gsub(/([^,]+),([^,]+),([^\[]+).+?,(\s+[^,]+,\s+[^,]+,\s+.+?)\]/, 'Room:\3,\4')
-            container_locations << title
+              if location.nil?
+                my_logger.warn("get_record_plain returned nil for ref: #{ref}")
+              elsif !location.respond_to?(:title)
+                my_logger.warn("location exists but does not respond to :title -- class: #{location.class}")
+              else
+                title = location.title.to_s
+                my_logger.info("Retrieved title: #{title}")
+                title = title.gsub(/([^,]+),([^,]+),([^\[]+).+?,(\s+[^,]+,\s+[^,]+,\s+.+?)\]/, 'Room:\3,\4')
+                container_locations << title
+              end
+
+            end
           end
-
+        else
+          my_logger.warn("No container_locations on top_container #{json['uri']}")
         end
-      rescue
-        random_variable = ""
+
+      rescue => e
+        my_logger.error("Error processing instance: #{e.message}")
+        my_logger.error(e.backtrace.join("\n"))
       end
-
     end
 
-
-    # locations.each do | loc |
-    #   # begin
-    #       if (loc['status'] == 'current')
-    #
-    #         ref = loc['ref']
-    #
-    #         location = archvivesspace.get_record(ref)
-    #
-    #         title = location['title']
-    #
-    #         container_locations << title
-    #       end
-    #   # rescue
-    #     other_variable = ""
-    #   # end
-    #
-    # end
-
-
-    if container_barcodes.length == 0 && container_locations == 0 && container_numbers.length == 0
-      #my_logger.info("all arrays are empty")
-      return_dict = {"container_numbers": "", "container_locations": "", "container_barcodes": ""}
+    my_logger.info("container locations: #{container_locations.inspect}")
+    if container_barcodes.empty? && container_locations.empty? && container_numbers.empty?
+      return_dict = {
+        "container_numbers" => "",
+        "container_locations" => "",
+        "container_barcodes" => ""
+      }
     else
-      return_dict = {"container_numbers": container_numbers.join(";"), "container_locations": container_locations.join(";"), "container_barcodes": container_barcodes.join(";")}
+      return_dict = {
+        "container_numbers" => container_numbers.join("; "),
+        "container_locations" => container_locations.join("; "),
+        "container_barcodes" => container_barcodes.join("; ")
+      }
     end
-    #my_logger.info("return_dict: #{return_dict}")
+
     return return_dict
   end
 

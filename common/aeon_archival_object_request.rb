@@ -74,9 +74,8 @@ class AeonArchivalObjectRequest
 
     resource_record = self.archivesspace.get_record(json['resource']['ref'])
 
-    # my_logger = Logger.new("yale_as_requests_ae_request.log")
+    #my_logger = Logger.new("yale_as_requests_ae_request.log")
 
-    # my_logger.info("resource #{resource_record.inspect}")
   
     ead_id = resource_record['ead_id']
     out['restrictions_apply'] = json['restrictions_apply']
@@ -98,9 +97,10 @@ class AeonArchivalObjectRequest
     out['ItemInfo8'] = AeonRequest.local_access_restrictions(json['notes'])
     out['Transaction.CustomFields.ContentWarning'] = AeonRequest.content_warning_content(json['notes'])
     instance_dict = AeonRequest.containers(json['instances'], json['container_locations'])
+    #my_logger.info("instance_dict #{instance_dict.inspect}")
 
-    out['Transaction.CustomFields.Container'] =  instance_dict[:container_numbers]
-    out["Transaction.CustomFields.StorageLocation"] = instance_dict[:container_locations]
+    out['Transaction.CustomFields.Container'] = instance_dict["container_numbers"]
+    out["Transaction.CustomFields.StorageLocation"] = instance_dict["container_locations"]
     out["Transaction.CustomFields.CollectionRestriction"] = AeonRequest.get_collection_restriction(resource_record['notes'])
     
  
@@ -135,6 +135,8 @@ class AeonArchivalObjectRequest
 
     out['requests'] = AeonRequest.build_requests(opts.fetch(:selected_container_instances, json['instances']), json['component_id'])
 
+    # ? Add this line:
+    #out[:custom_fields] = out.select { |k, _| k.start_with?("Transaction.CustomFields.") }
 
 
 

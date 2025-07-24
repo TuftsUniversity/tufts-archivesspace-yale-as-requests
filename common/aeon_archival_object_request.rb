@@ -93,18 +93,20 @@ class AeonArchivalObjectRequest
 
     out['ItemInfo7'] = json['extents'].select {|e| !e.has_key?('_inherited')}
       .map {|e| "#{e['number']} #{e['extent_type']}"}.join('; ')
-
+    my_logger = Logger.new("yale_as_archival_objects_common.log")
     out['ItemInfo8'] = AeonRequest.local_access_restrictions(json['notes'])
     out['Transaction.CustomFields.ContentWarning'] = AeonRequest.content_warning_content(json['notes'])
     instance_dict = AeonRequest.containers(json['instances'], json['container_locations'])
-    #my_logger.info("instance_dict #{instance_dict.inspect}")
+    my_logger.info("instance_dict #{instance_dict.inspect}")
 
     out['Transaction.CustomFields.Container'] = instance_dict["container_numbers"]
     out["Transaction.CustomFields.StorageLocation"] = instance_dict["container_locations"]
     out["Transaction.CustomFields.CollectionRestriction"] = AeonRequest.get_collection_restriction(resource_record['notes'])
     
  
-    out["ItemNumber"] = instance_dict[:container_barcodes]
+    #out["ItemNumber"] = instance_dict[:container_barcodes]
+    out["ItemNumber"] = instance_dict["container_barcodes"]
+
     out['ItemVolume'] = json['component_id']
 
     out['component_id'] = json['component_id']

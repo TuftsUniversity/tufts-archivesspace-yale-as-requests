@@ -353,7 +353,8 @@ class AeonRequest
       begin
         json = instance['sub_container']['top_container']['_resolved']
         container_barcodes << json['barcode']
-
+        my_logger = Logger.new("yale_as_requests_common.log")
+        my_logger.info("container barcodes: #{container_barcodes.inspect}")        
         # Extract container number from display_string
         string = json['display_string'].to_s.gsub(/^(.+?)\:.+$/, '\1')
         container_numbers << string unless string.empty?
@@ -403,7 +404,8 @@ class AeonRequest
         "container_barcodes" => container_barcodes.join("; ")
       }
     end
-
+    
+    my_logger.info("return_dict: #{return_dict.inspect}")        
     return return_dict
   end
 

@@ -103,7 +103,6 @@ class AeonArchivalObjectRequest
     out["Transaction.CustomFields.StorageLocation"] = instance_dict["container_locations"]
     out["Transaction.CustomFields.CollectionRestriction"] = AeonRequest.get_collection_restriction(resource_record['notes'])
     
- 
     #out["ItemNumber"] = instance_dict[:container_barcodes]
     out["ItemNumber"] = instance_dict["container_barcodes"]
 
@@ -137,6 +136,16 @@ class AeonArchivalObjectRequest
 
     out['requests'] = AeonRequest.build_requests(opts.fetch(:selected_container_instances, json['instances']), json['component_id'])
 
+    # Collect Folder values from each request and store as comma-delimited string
+    folders = out['requests']
+      .map { |req| req['Folder'] }
+      .compact
+      .reject(&:empty?)
+      .join(', ')
+
+    out['Transaction.CustomFields.Folder'] = folders unless folders.empty?
+
+        
     # ? Add this line:
     #out[:custom_fields] = out.select { |k, _| k.start_with?("Transaction.CustomFields.") }
 

@@ -151,6 +151,10 @@ class AeonRequest
       request["instance_container_child_indicator"] = container['indicator_2']
       request["instance_container_grandchild_type"] = container['type_3']
       request["instance_container_child_type"] = container['type_2']
+
+      if (container['type_2'] == 'folder')
+        request['Folder'] = container['indicator_2']
+      end
       request["instance_container_last_modified_by"] = container['last_modified_by']
       request["instance_container_created_by"] = container['created_by']
 

@@ -297,9 +297,11 @@ class AeonRequest
 
 
   def self.access_restrictions_content(notes)
-    notes.select {|n| n['type'] == 'accessrestrict'}
-         .map {|n| n['subnotes'].map {|s| s['content']}.join(' ')}
-         .join('; ')
+    notes
+      .select { |n| n['type'] == 'accessrestrict' }
+      .map { |n| n['subnotes'].map { |s| s['content'] }.join(' ') }
+      .join('; ')
+      .slice(0, 250)
   end
 
 
